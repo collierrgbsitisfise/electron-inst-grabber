@@ -3,8 +3,7 @@ const request = require('request');
 
 module.exports = (url, path, fileName) => {
     return new Promise((resolve, reject) => {
-        console.log('INSIDE');
-        request.head(url, function(err, res, body) {
+        request.head(url, function(err) {
             if (err) reject(err);
 
             request(url).pipe(fs.createWriteStream(`${path}/${fileName}.jpg`))
