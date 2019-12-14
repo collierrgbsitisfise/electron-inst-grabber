@@ -21,10 +21,11 @@ class App extends Component {
     const { username } = this.state;
 
     if (!username) return;
+
     const { filePaths } = await electron.dialog.showOpenDialog(browserWindow, {properties: ['openDirectory']});
     const pathToSave = filePaths.pop();
-    console.log(pathToSave);
-    ipcRenderer.send('pathUpdate', { pathToSave, instUserNmae: username });
+
+    ipcRenderer.send('grabbPhotos', { pathToSave, instUserNmae: username });
   }
 
   render() {

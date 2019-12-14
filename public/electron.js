@@ -6,8 +6,7 @@ const BrowserWindow = electron.BrowserWindow;
 
 const path = require("path");
 const isDev = require("electron-is-dev");
-const { Grabber } = require('./services');
-const { downloadImageByLink } = require('./utils');
+const { grabbPhotos } = require('./event-handlers');
 
 let mainWindow;
 
@@ -41,16 +40,4 @@ app.on("activate", () => {
   }
 });
 
-ipcMain.on('pathUpdate', async (e, { pathToSave, instUserNmae }) => {
-  console.log(pathToSave);
-  const grabber = new Grabber(instUserNmae);
-  await grabber.lunchPuppeter();
-  await grabber.evaluate();
-
-  const parsedLinks = grabber.getItems();
-
-  let inc = 1;
-  for (const link of parsedLinks) {
-      const res = await downloadImageByLink(link, pathToSave, `${instUserNmae}-${inc++}`);
-  }
-});
+ipcMain.on('grabbPhotos', grabbPhotos);
