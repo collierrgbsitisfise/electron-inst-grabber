@@ -10,13 +10,8 @@ const { grabbPhotos } = require('./event-handlers');
 
 let mainWindow;
 
-require("update-electron-app")({
-  repo: "kitze/react-electron-example",
-  updateInterval: "1 hour"
-});
-
 function createWindow() {
-  mainWindow = new BrowserWindow({ width: 900, height: 680, webPreferences: { nodeIntegration: true }});
+  mainWindow = new BrowserWindow({ width: 750, height: 650, webPreferences: { nodeIntegration: true }, resizable: false });
   mainWindow.webContents.openDevTools();
   mainWindow.loadURL(
     isDev

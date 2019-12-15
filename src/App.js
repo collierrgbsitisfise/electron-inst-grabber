@@ -33,13 +33,20 @@ class App extends Component {
     return (
       <div className="container">
         <input
+          className="input"
           type="text"
-          className="instagram-username"
-          placeholder="instagram username"
+          placeholder="username"
           value={username}
           onChange={this.handleUserNameChange}
         />
-        <button className="download-btn" onClick={this.downloadInstPhotos}>Download Profile Photo</button>
+
+        <div className="button" onClick={this.downloadInstPhotos}>
+          <span>Download</span>
+          <svg>
+            <polyline className="o1" points="0 0, 150 0, 150 55, 0 55, 0 0"></polyline>
+            <polyline className="o2" points="0 0, 150 0, 150 55, 0 55, 0 0"></polyline>
+          </svg>
+        </div>
       </div>
     );
   }
