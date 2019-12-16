@@ -16,6 +16,13 @@ class Grabber {
     return this.items;
   }
 
+  async getNumberOfPosts() {
+    const page = this.page;
+
+    const spanWithInfo = await page.$('span.g47SY ');
+    return (await spanWithInfo.getProperty('textContent')).jsonValue();
+  }
+
   async lunchPuppeter() {
     this.browser = await puppeteer.launch();
     this.page = await this.browser.newPage();
