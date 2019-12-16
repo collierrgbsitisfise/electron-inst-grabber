@@ -10,9 +10,20 @@ const grabbPhotos = async (e, { pathToSave, instUserNmae }) => {
     const parsedLinks = grabber.getItems();
 
     let inc = 1;
+    const chankSize = 100;
+    const chankArr = [];
     for (const link of parsedLinks) {
-        const res = await downloadImageByLink(link, pathToSave, `${instUserNmae}-${inc++}`);
+
+        if (chankArr.length === chankSize) {
+            await Promise.all(chankArr);
+            chankArr = [];
+            continue;
+        }
+
+        chankArr.push(downloadImageByLink(link, pathToSave, `${instUserNmae}-${inc++}`));
     }
+
+    await Promise.all(chankArr);
 }
 
 module.exports = grabbPhotos;
