@@ -83,3 +83,55 @@ input:focus::-webkit-input-placeholder {
 .button:hover .o2 {
   stroke-dashoffset: -420;
 }
+
+.progress-horizontal {
+  display: block;
+  width: 300px;
+  height: 4px;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.34);
+}
+
+.bar-horizontal {
+  width: 150px;
+  height: 100%;
+  margin-left: 0;
+  background-color: rgba(204,0,153,1);
+  animation-name: spinner;
+  animation-duration: 750ms;
+  animation-timing-function: ease-in-out;
+  animation-play-state: running;
+  animation-direction: alternate-reverse;
+  animation-iteration-count: infinite;
+}
+
+@keyframes spinner {
+  0% {
+    width: 0;
+  }
+  50% {
+    width: 150px;
+    margin-left: 150px;
+  }
+  100% {
+    width: 0;
+    margin-left: 75px;
+  }
+}
+
+
+progress {
+  border-radius: 2px; 
+  width: 250px;
+  height: 40px;
+}
+progress::-webkit-progress-bar {
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0);
+  border: 1px solid white;
+}
+progress::-webkit-progress-value {
+   border-radius: 2px;
+   background-color: rgba(204,0,153,0.9);
+   transition: 0.4s width;
+}

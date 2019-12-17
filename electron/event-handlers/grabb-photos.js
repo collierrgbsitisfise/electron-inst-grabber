@@ -1,17 +1,26 @@
 const { Grabber } = require('./../services');
 const { downloadImageByLink } = require('./../utils');
 
-const grabbPhotos = async (e, { pathToSave, instUserNmae }) => {
-    // @TODO handle error
-    const grabber = new Grabber(instUserNmae);
-    await grabber.lunchPuppeter();
-    await grabber.evaluate();
 
+const grabbPhotos = (mainWindow) => async (e, { pathToSave, instUserNmae }) => {
+    console.log('mainWindow : ', mainWindow);
+    mainWindow.send('showPreloader');
+    // @TODO handle error
+    const grabber = new Grabber(instUserNmae, mainWindow);
+    await grabber.lunchPuppeter();
+    const totalNumberOfPosts = await grabber.getNumberOfPosts();
+    mainWindow.send('hidePreloader');
+
+    mainWindow.send('startDownload');
+    await grabber.evaluate(+totalNumberOfPosts);
+    mainWindow.send('finishDownload');
+
+    mainWindow.send('showPreloader');
     const parsedLinks = grabber.getItems();
 
     let inc = 1;
     const chankSize = 100;
-    const chankArr = [];
+    let chankArr = [];
     for (const link of parsedLinks) {
 
         if (chankArr.length === chankSize) {
@@ -24,6 +33,7 @@ const grabbPhotos = async (e, { pathToSave, instUserNmae }) => {
     }
 
     await Promise.all(chankArr);
+    mainWindow.send('hidePreloader');
 }
 
 module.exports = grabbPhotos;

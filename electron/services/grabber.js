@@ -1,11 +1,13 @@
 const puppeteer = require('puppeteer');
 const fs = require(`fs`);
 
+
 class Grabber {
-  constructor(path = `instagram`, host = `https://instagram.com/`, numberOfPhotos = Infinity) {
+  constructor(path = `instagram`, mainWindow, host = `https://instagram.com/`, numberOfPhotos = Infinity) {
     this.path = path;
     this.host = host;
     this.numberOfPhotos = numberOfPhotos;
+    this.mainWindow = mainWindow;
   }
 
   get url() {
@@ -41,9 +43,9 @@ class Grabber {
     }
   }
 
-  async evaluate() {
+  async evaluate(numberOfPhotos) {
     try {
-      this.items = await this.load(this.numberOfPhotos);
+      this.items = await this.load(numberOfPhotos);
     } catch (error) {
       console.error(`There was a problem parsing the page`);
       console.error(error);
@@ -57,17 +59,19 @@ class Grabber {
   }
 
   async load(maxItemsSize) {
+    console.log('RECEIVE : ',maxItemsSize);
     this.maxItemsSize = maxItemsSize;
     let previousHeight;
     let currentScrollHeight;
     const page = this.page;
     const media = new Set();
 
+    this.mainWindow.send('updateProgress', 0);
     while (maxItemsSize == null || media.size < maxItemsSize) {
       try {
         previousHeight = await page.evaluate(`document.body.scrollHeight`);
         await page.evaluate(`window.scrollTo(0, document.body.scrollHeight)`);
-        
+
         try {
           await page.waitForFunction(
             `document.body.scrollHeight > ${previousHeight}`
@@ -82,6 +86,8 @@ class Grabber {
           return [].map.call(images, img => img.src);
         });
 
+        const percentage = Math.trunc(100 * (media.size + nodes.length) / maxItemsSize);
+        this.mainWindow.send('updateProgress', percentage);
         nodes.forEach(element => {
           if (media.size < maxItemsSize) {
             media.add(element);
