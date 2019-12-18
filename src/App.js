@@ -10,7 +10,13 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = { username: '', progress: 0, showProgress: false, showPreloader: false }
+    this.state = {
+        username: '',
+        progress: 0,
+        showProgress: false,
+        showPreloader: false,
+        preloaderText: '',
+    }
     this.handleEvents();
   }
 
@@ -20,6 +26,7 @@ class App extends Component {
       this.setState(state => ({
         ...state,
         progress: value,
+        preloaderText: `was parsed ${value >= 100 ? 100 : value}%`
       }));
     });
 
@@ -27,6 +34,7 @@ class App extends Component {
       this.setState(state => ({
         ...state,
         showPreloader: true,
+        preloaderText: data,
       }));
     });
 
@@ -34,6 +42,7 @@ class App extends Component {
       this.setState(state => ({
         ...state,
         showPreloader: false,
+        preloaderText: '',
       }));
     });
 
@@ -41,6 +50,7 @@ class App extends Component {
       this.setState(state => ({
         ...state,
         showProgress: true,
+        preloaderText: data
       }));
     });
 
@@ -48,6 +58,7 @@ class App extends Component {
       this.setState(state => ({
         ...state,
         showProgress: false,
+        preloaderText: '',
       }));
     });
   
@@ -77,32 +88,42 @@ class App extends Component {
 
   renderPreloader = () => {
     return (
-      <div className="progress-horizontal">
-        <div className="bar-horizontal"></div>
-      </div>
+      <>
+        <div className="progress-horizontal">
+          <div className="bar-horizontal"></div>
+        </div>
+      </>
+    )
+  }
+
+  renderLoaderTextInfo = (text) => {
+    return (
+      <h4 className="preloader-text">{text}</h4>
     )
   }
 
   render() {
-    const { username, progress, showProgress, showPreloader } = this.state;
-    console.log('progress : ', progress);
+    const { username, progress, showProgress, showPreloader, preloaderText } = this.state;
+    const isLoading = showPreloader || showProgress;
+
     return (
       <div className="container">
         <input
-          className="input"
+          className={`input ${isLoading && 'disabled'}`}
           type="text"
           placeholder="username"
           value={username}
           onChange={this.handleUserNameChange}
         />
 
-        <div className="button" onClick={this.downloadInstPhotos}>
+        <div className={`button ${isLoading && 'disabled'}`} onClick={this.downloadInstPhotos}>
           <span>Download</span>
           <svg>
             <polyline className="o1" points="0 0, 150 0, 150 55, 0 55, 0 0"></polyline>
             <polyline className="o2" points="0 0, 150 0, 150 55, 0 55, 0 0"></polyline>
           </svg>
         </div>
+        {isLoading && this.renderLoaderTextInfo(preloaderText)}
         {showPreloader && this.renderPreloader()}
         {showProgress && this.renderProgressBar(progress, 100)}
       </div>

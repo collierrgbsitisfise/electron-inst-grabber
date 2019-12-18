@@ -84,6 +84,16 @@ input:focus::-webkit-input-placeholder {
   stroke-dashoffset: -420;
 }
 
+.disabled {
+  pointer-events: none;
+  opacity: 0.65; 
+  cursor: not-allowed;
+}
+
+.preloader-text {
+  color: white;
+}
+
 .progress-horizontal {
   display: block;
   width: 300px;
@@ -96,7 +106,7 @@ input:focus::-webkit-input-placeholder {
   width: 150px;
   height: 100%;
   margin-left: 0;
-  background-color: rgba(204,0,153,1);
+  background-color: #fce703;
   animation-name: spinner;
   animation-duration: 750ms;
   animation-timing-function: ease-in-out;
@@ -132,6 +142,6 @@ progress::-webkit-progress-bar {
 }
 progress::-webkit-progress-value {
    border-radius: 2px;
-   background-color: rgba(204,0,153,0.9);
+   background-color: #fce703;
    transition: 0.4s width;
 }
