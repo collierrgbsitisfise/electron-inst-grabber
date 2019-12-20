@@ -1,13 +1,15 @@
 const puppeteer = require('puppeteer');
 const fs = require(`fs`);
+const { downloadImageByLink } = require('./../utils');
 
 
 class Grabber {
-  constructor(path = `instagram`, mainWindow, host = `https://instagram.com/`, numberOfPhotos = Infinity) {
+  constructor(path = `instagram`, mainWindow, pathToSave, host = `https://instagram.com/`, numberOfPhotos = Infinity) {
     this.path = path;
     this.host = host;
     this.numberOfPhotos = numberOfPhotos;
     this.mainWindow = mainWindow;
+    this.pathToSave = pathToSave;
   }
 
   get url() {
@@ -63,11 +65,16 @@ class Grabber {
     this.maxItemsSize = maxItemsSize;
     let previousHeight;
     let currentScrollHeight;
+    let chankArr = [];
+    let tmpArr = [];
+     let inc = 1;
+
     const page = this.page;
     const media = new Set();
 
     this.mainWindow.send('updateProgress', 0);
     while (maxItemsSize == null || media.size < maxItemsSize) {
+      tmpArr = [];
       try {
         previousHeight = await page.evaluate(`document.body.scrollHeight`);
         await page.evaluate(`window.scrollTo(0, document.body.scrollHeight)`);
@@ -78,7 +85,11 @@ class Grabber {
           );
         } catch (e) {}
 
-        await page.waitFor(1000);
+        await Promise.all([
+            page.waitFor(1000),
+            ...chankArr
+        ]);
+
         console.log('grabbing...');
 
         const nodes = await page.evaluate(() => {
@@ -91,8 +102,16 @@ class Grabber {
         nodes.forEach(element => {
           if (media.size < maxItemsSize) {
             media.add(element);
+            tmpArr.push(element);
           }
         });
+
+        chankArr = [];
+
+        for (const link of tmpArr) {
+          chankArr.push(downloadImageByLink(link, this.pathToSave, `${this.path}-${inc++}`));
+        }
+
         currentScrollHeight = await page.evaluate(`document.body.scrollHeight`);
 
         if (currentScrollHeight === previousHeight) {
@@ -103,6 +122,8 @@ class Grabber {
         break;
       }
     }
+
+    await Promise.all(chankArr);
     return media;
   }
 
