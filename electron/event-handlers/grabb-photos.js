@@ -1,13 +1,21 @@
 const { Grabber } = require('./../services');
-const { downloadImageByLink } = require('./../utils');
-
 
 const grabbPhotos = (mainWindow) => async (e, { pathToSave, instUserNmae }) => {
-    console.time('TIME');
     mainWindow.send('showPreloader', 'Preparing to parsing...');
-    // @TODO handle error
     const grabber = new Grabber(instUserNmae, mainWindow, pathToSave);
-    await grabber.lunchPuppeter();
+
+    try {
+        await grabber.lunchPuppeter();
+    } catch (err) {
+        console.log('ERROR');
+        console.log(err);
+        mainWindow.send('hidePreloader');
+        mainWindow.send('error', {
+            msg: 'invalid user name or profile itself is private !',
+        });
+        return;
+    }
+
     const totalNumberOfPosts = await grabber.getNumberOfPosts();
     mainWindow.send('hidePreloader');
 
@@ -15,29 +23,9 @@ const grabbPhotos = (mainWindow) => async (e, { pathToSave, instUserNmae }) => {
     await grabber.evaluate(+(totalNumberOfPosts.replace(/\D/g, "")));
     mainWindow.send('finishDownload');
 
-    // mainWindow.send('showPreloader', 'Download to parsed pahotos...');
-    // const parsedLinks = grabber.getItems();
-
-    // let inc = 1;
-    // const chankSize = 100;
-    // let chankArr = [];
-    // for (const link of parsedLinks) {
-
-    //     if (chankArr.length === chankSize) {
-    //         await Promise.all(chankArr);
-    //         chankArr = [];
-    //         continue;
-    //     }
-
-    //     chankArr.push(downloadImageByLink(link, pathToSave, `${instUserNmae}-${inc++}`));
-    // }
-
-    // await Promise.all(chankArr);
-    // mainWindow.send('hidePreloader');
-    console.timeEnd('TIME');
+    mainWindow.send('success', {
+        msg: `photos was parsed and saved: ${pathToSave}`,
+    });
 }
 
 module.exports = grabbPhotos;
-
-// TIME: 43583.125ms
-// TIME: 44107.465ms

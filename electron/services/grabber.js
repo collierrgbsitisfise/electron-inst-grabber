@@ -40,8 +40,7 @@ class Grabber {
     });
 
     if (await this.page.$(`.dialog-404`)) {
-      console.error(`can parse by url : ${this.url}`);
-      process.exit(1);
+      throw Error(`invalid url address: ${this.url}`);
     }
   }
 
@@ -66,15 +65,13 @@ class Grabber {
     let previousHeight;
     let currentScrollHeight;
     let chankArr = [];
-    let tmpArr = [];
-     let inc = 1;
+    let inc = 1;
 
     const page = this.page;
     const media = new Set();
 
     this.mainWindow.send('updateProgress', 0);
     while (maxItemsSize == null || media.size < maxItemsSize) {
-      tmpArr = [];
       try {
         previousHeight = await page.evaluate(`document.body.scrollHeight`);
         await page.evaluate(`window.scrollTo(0, document.body.scrollHeight)`);
@@ -85,10 +82,7 @@ class Grabber {
           );
         } catch (e) {}
 
-        await Promise.all([
-            page.waitFor(1000),
-            ...chankArr
-        ]);
+        await page.waitFor(1000);
 
         console.log('grabbing...');
 
@@ -102,15 +96,9 @@ class Grabber {
         nodes.forEach(element => {
           if (media.size < maxItemsSize) {
             media.add(element);
-            tmpArr.push(element);
           }
         });
 
-        chankArr = [];
-
-        for (const link of tmpArr) {
-          chankArr.push(downloadImageByLink(link, this.pathToSave, `${this.path}-${inc++}`));
-        }
 
         currentScrollHeight = await page.evaluate(`document.body.scrollHeight`);
 
@@ -121,6 +109,10 @@ class Grabber {
         console.error(error);
         break;
       }
+    }
+
+    for (const link of Array.from(media)) {
+      chankArr.push(downloadImageByLink(link, this.pathToSave, `${this.path}-${inc++}`));
     }
 
     await Promise.all(chankArr);

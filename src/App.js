@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { ToastsContainer, ToastsStore, ToastsContainerPosition } from 'react-toasts';
+
 import './App.css';
 
 const electron = window.require('electron').remote;
@@ -61,7 +63,28 @@ class App extends Component {
         preloaderText: '',
       }));
     });
-  
+    
+    ipcRenderer.on('error', (e, { msg }) => {
+      ToastsStore.error(msg, 6000);
+      this.setState(state => ({
+        username: '',
+        progress: 0,
+        showProgress: false,
+        showPreloader: false,
+        preloaderText: '',
+      }));
+    });
+
+    ipcRenderer.on('success', (e, { msg }) => {
+      ToastsStore.success(msg, 6000);
+      this.setState(state => ({
+        username: '',
+        progress: 0,
+        showProgress: false,
+        showPreloader: false,
+        preloaderText: '',
+      }));
+    });
   }
   
   handleUserNameChange = event => {
@@ -75,6 +98,10 @@ class App extends Component {
 
     const { filePaths } = await electron.dialog.showOpenDialog(browserWindow, {properties: ['openDirectory']});
     const pathToSave = filePaths.pop();
+
+    if (!pathToSave) {
+      return;
+    }
 
     ipcRenderer.send('grabbPhotos', { pathToSave, instUserNmae: username });
   }
@@ -116,7 +143,7 @@ class App extends Component {
           onChange={this.handleUserNameChange}
         />
 
-        <div className={`button ${isLoading && 'disabled'}`} onClick={this.downloadInstPhotos}>
+        <div className={`button ${(isLoading || !username) && 'disabled'}`} onClick={this.downloadInstPhotos}>
           <span>Download</span>
           <svg>
             <polyline className="o1" points="0 0, 150 0, 150 55, 0 55, 0 0"></polyline>
@@ -126,6 +153,9 @@ class App extends Component {
         {isLoading && this.renderLoaderTextInfo(preloaderText)}
         {showPreloader && this.renderPreloader()}
         {showProgress && this.renderProgressBar(progress, 100)}
+
+
+        <ToastsContainer store={ToastsStore} position={ToastsContainerPosition.TOP_LEFT}/>
       </div>
     );
   }
