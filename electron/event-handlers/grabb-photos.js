@@ -1,4 +1,5 @@
 const { Grabber } = require('./../services');
+const { downloadImageByLink } = require('./../utils');
 
 const grabbPhotos = (mainWindow) => async (e, { pathToSave, instUserNmae }) => {
     mainWindow.send('showPreloader', 'Preparing to parsing...');
@@ -22,6 +23,25 @@ const grabbPhotos = (mainWindow) => async (e, { pathToSave, instUserNmae }) => {
     mainWindow.send('startDownload');
     await grabber.evaluate(+(totalNumberOfPosts.replace(/\D/g, "")));
     mainWindow.send('finishDownload');
+
+    mainWindow.send('showPreloader', 'Save photos...');
+    const media = grabber.getItems();
+    const chnakSize = 100;
+    let chankArr = [];
+
+    for (const [i, link] of Array.from(media).entries()) {
+
+        if (Number.isInteger(i / chnakSize)) {
+            await Promise.all(chankArr);
+            chankArr = [];
+            chankArr.push(downloadImageByLink(link, pathToSave, `${instUserNmae}-${i + 1}`));
+            continue;
+        }
+        chankArr.push(downloadImageByLink(link, pathToSave, `${instUserNmae}-${i + 1}`));
+    }
+  
+    await Promise.all(chankArr);
+    mainWindow.send('hidePreloader');
 
     mainWindow.send('success', {
         msg: `photos was parsed and saved: ${pathToSave}`,

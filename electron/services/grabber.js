@@ -1,6 +1,5 @@
 const puppeteer = require('puppeteer');
 const fs = require(`fs`);
-const { downloadImageByLink } = require('./../utils');
 
 
 class Grabber {
@@ -60,12 +59,9 @@ class Grabber {
   }
 
   async load(maxItemsSize) {
-    console.log('RECEIVE : ',maxItemsSize);
     this.maxItemsSize = maxItemsSize;
     let previousHeight;
     let currentScrollHeight;
-    let chankArr = [];
-    let inc = 1;
 
     const page = this.page;
     const media = new Set();
@@ -111,11 +107,6 @@ class Grabber {
       }
     }
 
-    for (const link of Array.from(media)) {
-      chankArr.push(downloadImageByLink(link, this.pathToSave, `${this.path}-${inc++}`));
-    }
-
-    await Promise.all(chankArr);
     return media;
   }
 
