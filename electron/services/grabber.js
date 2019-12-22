@@ -52,10 +52,11 @@ class Grabber {
   async load(maxItemsSize) {
     this.maxItemsSize = maxItemsSize;
     let previousHeight;
-    let currentScrollHeight;
 
     const page = this.page;
     const media = new Set();
+
+    const timeWait = 1000 + ((Math.trunc(maxItemsSize / 500) >= 10 ? 10 : Math.trunc(maxItemsSize / 500)) * 500);
 
     this.mainWindow.send('updateProgress', 0);
     while (maxItemsSize == null || media.size < maxItemsSize) {
@@ -69,7 +70,7 @@ class Grabber {
           );
         } catch (e) {}
 
-        await page.waitFor(1000);
+        await page.waitFor(timeWait);
 
         const nodes = await page.evaluate(() => {
           const images = document.querySelectorAll(`a > div > div.KL4Bh > img`);
@@ -85,7 +86,6 @@ class Grabber {
         });
 
         const loader = await page.$('div._4emnV ');
-        currentScrollHeight = await page.evaluate(`document.body.scrollHeight`);
 
         if (!loader) {
           break;
