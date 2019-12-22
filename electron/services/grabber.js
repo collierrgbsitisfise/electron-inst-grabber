@@ -44,16 +44,7 @@ class Grabber {
   }
 
   async evaluate(numberOfPhotos) {
-    try {
-      this.items = await this.load(numberOfPhotos);
-    } catch (error) {
-      console.error(`There was a problem parsing the page`);
-      console.error(error);
-      process.exit(1);
-    }
-
-    console.log(`was scarped ${this.items.size} photos`);
-
+    this.items = await this.load(numberOfPhotos);
     await this.page.close();
     await this.browser.close();
   }
@@ -80,8 +71,6 @@ class Grabber {
 
         await page.waitFor(1000);
 
-        console.log('grabbing...');
-
         const nodes = await page.evaluate(() => {
           const images = document.querySelectorAll(`a > div > div.KL4Bh > img`);
           return [].map.call(images, img => img.src);
@@ -95,10 +84,10 @@ class Grabber {
           }
         });
 
-
+        const loader = await page.$('div._4emnV ');
         currentScrollHeight = await page.evaluate(`document.body.scrollHeight`);
 
-        if (currentScrollHeight === previousHeight) {
+        if (!loader) {
           break;
         }
       } catch (error) {

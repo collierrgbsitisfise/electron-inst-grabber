@@ -8,7 +8,7 @@ const grabbPhotos = (mainWindow) => async (e, { pathToSave, instUserNmae }) => {
     try {
         await grabber.lunchPuppeter();
     } catch (err) {
-        console.log('ERROR');
+        console.log('ERROR: luchPuppeter');
         console.log(err);
         mainWindow.send('hidePreloader');
         mainWindow.send('error', {
@@ -16,31 +16,50 @@ const grabbPhotos = (mainWindow) => async (e, { pathToSave, instUserNmae }) => {
         });
         return;
     }
-
-    const totalNumberOfPosts = await grabber.getNumberOfPosts();
     mainWindow.send('hidePreloader');
 
     mainWindow.send('startDownload');
-    await grabber.evaluate(+(totalNumberOfPosts.replace(/\D/g, "")));
+    try {
+        const totalNumberOfPosts = await grabber.getNumberOfPosts();
+    
+        await grabber.evaluate(+(totalNumberOfPosts.replace(/\D/g, "")));
+    } catch (err) {
+        console.log('ERROR: evaluate');
+        console.log(err);
+        mainWindow.send('error', {
+            msg: 'parsing problems try one more time',
+        });
+        return;
+    }
     mainWindow.send('finishDownload');
 
+
     mainWindow.send('showPreloader', 'Save photos...');
-    const media = grabber.getItems();
-    const chnakSize = 100;
-    let chankArr = [];
-
-    for (const [i, link] of Array.from(media).entries()) {
-
-        if (Number.isInteger(i / chnakSize)) {
-            await Promise.all(chankArr);
-            chankArr = [];
+    try {
+        const media = grabber.getItems();
+        const chnakSize = 100;
+        let chankArr = [];
+        
+        console.log('SIZE', media.size)
+        for (const [i, link] of Array.from(media).entries()) {
+    
+            if (Number.isInteger(i / chnakSize)) {
+                await Promise.all(chankArr);
+                chankArr = [];
+                chankArr.push(downloadImageByLink(link, pathToSave, `${instUserNmae}-${i + 1}`));
+                continue;
+            }
             chankArr.push(downloadImageByLink(link, pathToSave, `${instUserNmae}-${i + 1}`));
-            continue;
         }
-        chankArr.push(downloadImageByLink(link, pathToSave, `${instUserNmae}-${i + 1}`));
+      
+        await Promise.all(chankArr);
+    } catch (err) {
+        console.log('ERROR: downalod photos');
+        console.log(err);
+        mainWindow.send('error', {
+            msg: 'parsing with saving photos try one more time',
+        });
     }
-  
-    await Promise.all(chankArr);
     mainWindow.send('hidePreloader');
 
     mainWindow.send('success', {

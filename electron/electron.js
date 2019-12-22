@@ -12,7 +12,7 @@ let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({ width: 750, height: 650, webPreferences: { nodeIntegration: true }, resizable: false });
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
   mainWindow.loadURL(
     isDev
       ? "http://localhost:3000"
