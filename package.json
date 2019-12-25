@@ -20,6 +20,7 @@
     "concurrently": "4.1.2",
     "electron": "6.0.11",
     "electron-builder": "^21.2.0",
+    "electron-packager": "^14.1.1",
     "prettier": "^1.4.4",
     "react-scripts": "3.1.2",
     "wait-on": "3.3.0"
@@ -40,6 +41,7 @@
     "electron-build": "electron-builder",
     "release": "npm run react-build && electron-builder --publish=always",
     "build": "npm run react-build && npm run electron-build",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --prune=true --out=release-builds",
     "start": "concurrently \"cross-env BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron .\""
   },
   "browserslist": {
