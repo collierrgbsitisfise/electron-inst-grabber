@@ -11,7 +11,13 @@ const { grabbPhotos } = require('./event-handlers');
 let mainWindow;
 
 function createWindow() {
-  mainWindow = new BrowserWindow({ width: 750, height: 650, webPreferences: { nodeIntegration: true }, resizable: false });
+  mainWindow = new BrowserWindow({
+    width: 750,
+    height: 650,
+    webPreferences: { nodeIntegration: true },
+    resizable: false,
+    icon: path.join(__dirname, '../assets/img/grabber.png')
+  });
   // mainWindow.webContents.openDevTools();
   mainWindow.loadURL(
     isDev
