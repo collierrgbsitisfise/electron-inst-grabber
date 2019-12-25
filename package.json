@@ -42,6 +42,8 @@
     "release": "npm run react-build && electron-builder --publish=always",
     "build": "npm run react-build && npm run electron-build",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Electron Tutorial App\"",
+    "package-linux": "electron-packager . instagrabber --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/img/grabber.png --prune=true --out=release-builds",
     "start": "concurrently \"cross-env BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron .\""
   },
   "browserslist": {
