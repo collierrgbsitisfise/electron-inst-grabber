@@ -49,6 +49,7 @@
     "package-linux": "electron-packager . instagrabber --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/img/grabber.png --prune=true --out=release-builds",
     "package-all": "npm run react-build && npm run package-mac && npm run package-win && npm run package-linux",
     "create-installer-mac": "electron-installer-dmg ./release-builds/instagrabber-darwin-x64/instagrabber.app intagrabber --out=release-installer/mac --overwrite --debug",
+    "create-debian-installer": "electron-installer-debian --src release-builds/instagrabber-linux-x64/ --arch amd64 --config debian.json",
     "start": "concurrently \"cross-env BROWSER=none npm run react-start\" \"wait-on http://localhost:3000 && electron .\""
   },
   "browserslist": {
