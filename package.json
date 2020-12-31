@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "concurrently": "4.1.2",
-    "electron": "6.0.11",
+    "electron": "7.2.4",
     "electron-builder": "^21.2.0",
     "electron-installer-dmg": "^3.0.0",
     "electron-packager": "^14.1.1",
